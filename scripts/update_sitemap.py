@@ -16,13 +16,13 @@ TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
     <loc>{site_url}/</loc>
     <lastmod>{today}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>{site_url}/stations/</loc>
     <lastmod>{today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
   </url>
 </urlset>
 """
