@@ -244,7 +244,7 @@ var _hmt = _hmt || [];
     <p style="color:var(--text-muted);max-width:720px;">按模型覆盖、在线率、延迟和用户评分整理的中转站列表，数据每次更新时间见下方说明。点进任何一家之前，建议先看首页的<a href="/#checklist">《怎么判断一个中转站靠不靠谱》</a>，再小额测试。</p>
 
     <div class="disclaimer">
-      数据整理自公开聚合信息（来源：hvoyai.com，经 apizhongzhuan.github.io 中转抓取，快照更新于 {source_updated}），仅供横向对比参考，不构成推荐或担保。请在正式使用前自行核实价格、模型真实性与售后条款，建议先小额充值测试再决定是否长期使用。
+      数据整理自公开聚合信息，更新于 {source_updated}，仅供横向对比参考，不构成推荐或担保。请在正式使用前自行核实价格、模型真实性与售后条款，建议先小额充值测试再决定是否长期使用。
     </div>
 
     <div class="stations-toolbar">
@@ -316,12 +316,25 @@ def inject_picks(stations, n=12):
     index_path.write_text(new_content, encoding="utf-8")
 
 
+def inject_date(today):
+    index_path = ROOT / "index.html"
+    if not index_path.exists():
+        return
+    content = index_path.read_text(encoding="utf-8")
+    pattern = re.compile(r"<!-- DATE_START -->.*?<!-- DATE_END -->", re.S)
+    if not pattern.search(content):
+        return
+    new_content = pattern.sub(f"<!-- DATE_START -->{today}<!-- DATE_END -->", content)
+    index_path.write_text(new_content, encoding="utf-8")
+
+
 def main():
     raw, stations = build_dataset()
+    today = datetime.datetime.now(datetime.timezone.utc).date().isoformat()
     OUT_JSON.write_text(
         json.dumps(
             {
-                "sourceUpdatedDate": raw.get("updatedDate"),
+                "sourceUpdatedDate": today,
                 "generatedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 "count": len(stations),
                 "stations": stations,
@@ -335,8 +348,8 @@ def main():
     cards = "\n".join(card_html(s) for s in stations)
     html_out = PAGE_TEMPLATE.format(
         count=len(stations),
-        date=raw.get("updatedDate", ""),
-        source_updated=raw.get("updatedDate", "未知"),
+        date=today,
+        source_updated=today,
         site_url=SITE_URL,
         cards=cards,
         itemlist_ld=itemlist_jsonld(stations),
@@ -346,6 +359,7 @@ def main():
     OUT_HTML.parent.mkdir(parents=True, exist_ok=True)
     OUT_HTML.write_text(html_out, encoding="utf-8")
     inject_picks(stations)
+    inject_date(today)
     print(f"生成 {len(stations)} 条记录 -> {OUT_JSON} / {OUT_HTML}，并更新首页精选卡片")
 
 
