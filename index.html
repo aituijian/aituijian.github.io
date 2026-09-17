@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI API 中转站是什么？newapi/sub2api/CPA 科普与避坑指南 | AI中转站推荐</title>
+<meta name="description" content="一篇讲清楚 AI API 中转站的原理：newapi、sub2api、CPA 三类程序的区别，服务器和网络怎么选，计费和倍率是怎么算的，便宜渠道的风险，以及挑选中转站的判断标准。">
+<link rel="canonical" href="https://aituijian.github.io/">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AI中转站推荐">
+<meta property="og:title" content="AI API 中转站是什么？newapi/sub2api/CPA 科普与避坑指南">
+<meta property="og:description" content="讲清楚中转站的常见程序、服务器网络、计费原理、渠道风险和判断标准，附 200 家中转站推荐榜。">
+<meta property="og:url" content="https://aituijian.github.io/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "AI中转站推荐",
+  "url": "https://aituijian.github.io/",
+  "inLanguage": "zh-CN",
+  "description": "AI API 中转站科普与推荐榜，讲解 newapi/sub2api/CPA、服务器网络、计费原理、渠道风险与判断标准。"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "中转站和官网直连有什么区别？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "模型能力本身没有区别，前提是中转站给的是原版模型没有偷偷降配。区别在于中转站帮你处理了海外支付、网络和账号风控这些麻烦事，价格通常也更低，但你需要自己承担平台是否靠谱的风险，也失去了官方的售后保障。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "中转站会不会突然跑路？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "有可能，尤其是价格低到不正常的引流型站点。降低风险最实际的办法是不要一次充太多，先小额测试几天，确认计费和响应都正常，再决定要不要继续加值。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "中转站的价格为什么能比官网便宜？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "正规的低价通常来自批量采购、人民币结算省去的手续费，以及不同订阅渠道之间的成本差。如果价格低到明显不合常理，大概率不是让利，而是用了不稳定的渠道，或者模型本身被偷偷换成了便宜的小模型。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "第一次用中转站，怎么用比较稳妥？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "先看计费是否透明、能不能查到每次请求的消耗明细，再小额充值（几美元或几十元人民币）跑通一遍流程，确认输出质量和扣费都对得上，最后再考虑是否长期使用或大额充值。"
+      }
+    }
+  ]
+}
+</script>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?9f8f0ae7252eb5810e75bc1a3bed33d7";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+</head>
+<body>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/">
+      <svg viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#eef1ec"/><path d="M16 40 L28 22 L36 34 L48 18" stroke="#2f6b3a" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="48" cy="18" r="4" fill="#2f6b3a"/></svg>
+      AI中转站推荐
+    </a>
+    <nav class="main-nav">
+      <a href="#what-is">科普</a>
+      <a href="#checklist">避坑指南</a>
+      <a href="/stations/">中转站推荐榜</a>
+      <a href="#faq">常见问题</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="container">
+      <h1>AI API 中转站是什么？一篇讲清楚 newapi、sub2api、CPA 和怎么挑靠谱平台</h1>
+      <p>中转站是介于你和 OpenAI、Anthropic、Google 等官方模型之间的一层转发服务：它帮你处理支付、网络和账号问题，把 API 用更低门槛的方式分发给你用。这篇整理了中转站常见的技术架构、计费原理、渠道风险，以及挑选时该看哪些指标，最后附了一份按数据整理的中转站参考榜。</p>
+      <div class="cta-row">
+        <a class="btn" href="/stations/">查看 200 家中转站推荐 →</a>
+        <a class="btn btn-outline" href="#checklist">先看怎么避坑</a>
+      </div>
+      <p class="updated">内容整理于 2026 年，会随行情更新。</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <nav class="toc" aria-label="页面目录">
+      <h2>目录</h2>
+      <ol>
+        <li><a href="#what-is">中转站是什么，为什么有人用它</a></li>
+        <li><a href="#programs">newapi / sub2api / CPA 三类程序的区别</a></li>
+        <li><a href="#servers">中转站的服务器和网络怎么选</a></li>
+        <li><a href="#billing">计费原理：额度、倍率和真实成本</a></li>
+        <li><a href="#channels">便宜渠道从哪来，风险点在哪</a></li>
+        <li><a href="#checklist">六个常见坑和五条判断标准</a></li>
+        <li><a href="#integrate">怎么用代码接入中转 API</a></li>
+        <li><a href="#build-your-own">想自己开一个中转站？</a></li>
+        <li><a href="#picks">精选中转站参考</a></li>
+        <li><a href="#faq">常见问题</a></li>
+      </ol>
+    </nav>
+
+    <article>
+      <section id="what-is">
+        <h2>中转站是什么，为什么有人用它</h2>
+        <p>直接用 OpenAI、Anthropic 这些官方接口，你要先绑定海外信用卡或 PayPal，账号还可能因为地区、支付方式或使用习惯被风控限制。中转站做的事情很简单：先由中转站自己完成官方账号和支付的搭建，再把调用能力按份转卖给用户。你拿到的是一个和官方协议兼容的接口地址（<code>base_url</code>）加一个令牌，代码基本不用改。</p>
+        <p>对个人开发者来说，中转站解决的是"支付和网络门槛"；对企业来说，中转站还额外提供了额度管理、多模型切换和成本核算的后台，方便团队统一管控用量。</p>
+      </section>
+
+      <section id="programs">
+        <h2>newapi / sub2api / CPA 三类程序的区别</h2>
+        <p>市面上绝大多数中转站，不管界面做得多花哨，底层跑的基本是这三类程序之一，或者是在它们基础上改的皮。</p>
+        <h3>newapi：按官方 API 额度分发</h3>
+        <p><a href="https://github.com/QuantumNous/new-api" target="_blank" rel="nofollow noopener noreferrer">newapi</a> 是从早期的 oneapi 项目发展出来的，核心思路是"渠道方买官方 API 额度，再按规则分给用户"。中转站在后台设置好每个模型的倍率、用户额度上限、可用模型范围，用户消费多少就从额度里扣多少。它本质上是一层计费与路由网关，谁在后面接的是官方 API、还是别的中转，前端用户通常看不出来。</p>
+        <h3>sub2api：把订阅拆开分发</h3>
+        <p>newapi 分发的是 API 额度，而 sub2api 分发的是订阅制账号（比如 ChatGPT Plus/Pro 这类按月付费、不按 token 计费的订阅）。可以理解成中转站团购了几份订阅，然后把里面的用量切成小份卖给很多人用。因为订阅账号本身有并发和频率限制，sub2api 除了转发请求，还要做账号轮换、限流和防止触发官方风控，这部分工作量比 newapi 大得多。</p>
+        <h3>CPA（CLI Proxy API）：从命令行工具里取号</h3>
+        <p><a href="https://github.com/router-for-me/CLIProxyAPI" target="_blank" rel="nofollow noopener noreferrer">CPA</a> 同样是从订阅账号取用量，但取的渠道是 Claude Code、Codex CLI 这类命令行工具背后挂的订阅额度，而不是网页版订阅。它做的封装和计费能力都比较轻，更常见于拼车、自用分享这类小范围场景，很少见到成熟的商业计费系统。</p>
+        <p class="callout">简化理解：newapi 转发的是"按量计费的官方 API"，sub2api 转发的是"网页订阅"，CPA 转发的是"命令行工具背后的订阅"。三者可以叠加使用，比如一个站点前台用 newapi 做计费和分发，后端上游接的是别人用 sub2api 或 CPA 转出来的账号池。</p>
+      </section>
+
+      <section id="servers">
+        <h2>中转站的服务器和网络怎么选</h2>
+        <p>中转站的稳定性，很大程度取决于它用什么线路、什么规格的服务器。了解这些，能帮你大致判断一个站点是"随手搭的小作坊"还是"认真长期运营的团队"。</p>
+        <h3>网络加速方案</h3>
+        <ul>
+          <li><strong>Cloudflare：</strong>最常见的免费 CDN，有技术能力的站点会再叠加优选 IP 给亚太用户加速。</li>
+          <li><strong>亚太 CDN：</strong>不少中小型服务商会走日本、香港节点，对国内的访问速度通常不错。</li>
+          <li><strong>备案后的国内 CDN：</strong>比如支持动态加速的国内厂商方案，速度更快，但要求域名完成大陆备案，合规成本和风险都更高，所以大部分服务商不会走这条路。</li>
+        </ul>
+        <h3>服务器规格</h3>
+        <p>小型站点或者自用/分享给朋友的场景，一台普通 VPS（一年几百元档）基本够用。真正做到有一定用户量的站点，通常会换成带宽更大的独立服务器，因为中转站的负载模式是"高并发、吃单核性能"，而不是吃核心数量，所以选服务器时优先看单核性能和带宽吞吐，而不是核心数字。做大规模商业化的站点，一年的服务器成本可能在数千元甚至更高。</p>
+      </section>
+
+      <section id="billing">
+        <h2>计费原理：额度、倍率和真实成本</h2>
+        <p>这一部分是最容易让人看晕的地方：为什么同样的模型，不同中转站报价能差好几倍？先讲清楚几个概念，再看一个简化的例子。</p>
+        <h3>记账单位不是真的美元</h3>
+        <p>大部分中转站会把"1 美元官方标价额度"记成"1 元人民币平台额度"，方便计算，但这只是记账方式，不代表站点真的用 1 元人民币换到了 1 美元的官方余额。</p>
+        <h3>倍率是怎么来的</h3>
+        <p>假设中转站拿到一个订阅账号，成本是每月 1400 元左右，这个订阅账号一周能跑出的用量，按官方 API 标价折算大约值 1600 美元。按月折算：</p>
+        <pre><code>1600 美元/周 × 4 周 ≈ 6400（元）平台额度/月
+真实成本 1400 元 ÷ 折算额度 6400 元 ≈ 0.22</code></pre>
+        <p>也就是说，光从"折算额度"和"真实成本"的比例看，倍率定在 0.2 左右才刚好不亏本。如果一个站点长期把倍率做到 0.1 甚至更低，那要么它的渠道成本比这个例子低很多，要么就是在用亏本价引流，不会长期持续。</p>
+        <h3>看价格要看三层</h3>
+        <p>判断一个报价是否合理，不能只看"折算后的官方标价额度"，要拆开看三件事：订阅或渠道的真实成本、这份成本能折算出多少官方标价额度、以及卖给用户时定的倍率。这三层分清楚，才能理解为什么有的站能做到 0.1～0.2 倍率还能维持，也能看出哪些价格低到不符合常理。</p>
+      </section>
+
+      <section id="channels">
+        <h2>便宜渠道从哪来，风险点在哪</h2>
+        <p>除了正常购买的订阅账号，市面上还流通着几类更便宜的渠道来源。了解它们是什么、为什么便宜，能帮你判断一个"骨折价"中转站背后可能承担着什么风险，而不是鼓励去操作这些渠道。</p>
+        <table>
+          <thead><tr><th>渠道类型</th><th>是什么</th><th>为什么便宜</th></tr></thead>
+          <tbody>
+            <tr><td>平台优惠 / 首月折扣</td><td>官方对新用户或特定地区给的订阅折扣</td><td>官方补贴，用完即恢复原价，供给量有限</td></tr>
+            <tr><td>短期漏洞（俗称 Bug Team）</td><td>官方系统偶发的计费或开户漏洞</td><td>漏洞被发现前的窗口期，官方修复后立刻失效</td></tr>
+            <tr><td>争议支付找回（俗称黑冲）</td><td>用户对第三方支付平台发起"未授权交易"申诉追回款项</td><td>账号在同步封禁前还有几天可用窗口，本质是占用了支付纠纷机制，风险和道德争议都很高</td></tr>
+            <tr><td>第三方客户端逆向</td><td>通过非官方 API 的客户端/IDE 间接获取模型访问</td><td>绕开了官方计费入口，但接口不稳定、上下文容易被覆盖，输出质量通常打折扣</td></tr>
+            <tr><td>盗用密钥/余额</td><td>搜集别人泄露或配置不当暴露的 API key</td><td>完全不是渠道方自己的成本，属于侵占他人资源</td></tr>
+          </tbody>
+        </table>
+        <p class="callout danger">越靠后的渠道，风险越大：涉及争议支付找回、盗用密钥的渠道本身就有法律和账号安全风险，作为用户即使自己没参与操作，也可能因为用了被截留数据的"投毒"上游而遭遇隐私泄露、模型被偷偷调包等问题。价格低到明显不合理时，先假设它用的是这类渠道，而不是"运气好"。</p>
+        <h3>便宜渠道常见的副作用</h3>
+        <ul>
+          <li><strong>缓存命中率下降：</strong>如果后端账号池频繁更换或被封禁，你的对话缓存经常失效，实际计算成本反而更高。</li>
+          <li><strong>数据被二次利用：</strong>接入的账号如果本来就是别人的蜜罐或者监控目标，你的对话内容有被截留的风险。</li>
+          <li><strong>输出质量下降：</strong>通过第三方客户端逆向接入的渠道，往往自带一层固定上下文，容易和你自己的提示词冲突，导致回答变差。</li>
+          <li><strong>模型被偷偷替换：</strong>低价站点为了控制成本，有概率把请求路由到能力更弱的模型上，而不是你选的那一款。</li>
+        </ul>
+      </section>
+
+      <section id="checklist">
+        <h2>六个常见坑和五条判断标准</h2>
+        <p>把上面的原理落到实际选站上，可以归纳成两张清单：会踩的坑，和用来避坑的判断标准。</p>
+        <h3>六个常见坑</h3>
+        <ol>
+          <li><strong>套壳降配：</strong>宣传用的是旗舰模型，实际悄悄换成便宜的小模型或别人微调过的版本，回答质量和官网明显有差距。</li>
+          <li><strong>黑盒计费：</strong>后台查不到每次请求真实消耗的 token，只看到余额在掉，扣得对不对无从验证。</li>
+          <li><strong>低价引流后涨价或跑路：</strong>用远低于成本的价格吸引大量充值，充值高峰后涨价、限速甚至直接关站。</li>
+          <li><strong>高峰期不稳定：</strong>平时正常，一到并发高峰就排队、超时，关键任务卡在中间最难受。</li>
+          <li><strong>索要官方账号密码：</strong>正规接入只需要一个独立令牌，如果对方要你提供官方账号密码或邮箱验证码，账号安全已经不在你手里了。</li>
+          <li><strong>充值容易提现难：</strong>充值时各种满减优惠，退款或提现时各种理由推脱，甚至设置余额到期清零逼你持续消费。</li>
+        </ol>
+        <h3>五条判断标准</h3>
+        <table>
+          <thead><tr><th>维度</th><th>靠谱的表现</th><th>危险信号</th></tr></thead>
+          <tbody>
+            <tr><td>模型是否纯血</td><td>输出质量和官网一致</td><td>回答明显变差，疑似降配或套壳</td></tr>
+            <tr><td>计费是否透明</td><td>后台能查每次请求的 token 明细</td><td>只显示余额变化，没有消耗明细</td></tr>
+            <tr><td>价格是否合理</td><td>比官网便宜，但在前文倍率区间内</td><td>低到明显不合常理，疑似引流或渠道有问题</td></tr>
+            <tr><td>付款是否方便且安全</td><td>支付宝/微信/银行卡直接付，不涉及账号密码</td><td>要求提供官方账号密码或验证码代为开通</td></tr>
+            <tr><td>运营是否稳定</td><td>能查到成立时间、稳定的客服渠道，支持小额试用</td><td>站点频繁更换域名，客服失联，没有历史可查</td></tr>
+          </tbody>
+        </table>
+        <p>能同时满足这五条的站点，基本就在可以放心小额尝试的范围内了。</p>
+      </section>
+
+      <section id="integrate">
+        <h2>怎么用代码接入中转 API</h2>
+        <p>只要中转站提供的是 OpenAI 兼容接口，接入方式和调用官方 API 几乎一样，改两个参数就行。</p>
+        <h3>Python 示例</h3>
+        <pre><code>from openai import OpenAI
+
+client = OpenAI(
+    api_key="你的令牌",             # 中转站后台创建的 Token
+    base_url="中转站提供的接口地址", # 换成任意一家中转即可
+)
+
+resp = client.chat.completions.create(
+    model="模型名称",               # 以中转站文档列出的模型名为准
+    messages=[{"role": "user", "content": "你好"}],
+)
+print(resp.choices[0].message.content)
+</code></pre>
+        <h3>curl 示例（快速验证令牌是否可用）</h3>
+        <pre><code>curl "中转站接口地址/chat/completions" \
+  -H "Authorization: Bearer 你的令牌" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "模型名称", "messages": [{"role": "user", "content": "hello"}]}'
+</code></pre>
+        <p>如果主要是用 AI 写代码，很多中转站也提供一键配置文档，可以直接接进 Claude Code、Cline、Cursor 这类工具，不用自己写调用代码。</p>
+        <p class="callout">任何接入方式都只需要令牌，不需要你的官方账号密码。凡是要求账号密码或邮箱验证码"代开通"的，直接跳过。</p>
+      </section>
+
+      <section id="build-your-own">
+        <h2>想自己开一个中转站？</h2>
+        <p>如果你也在考虑做中转，先想清楚自己的真实需求，再往下看基础设施和运营层面要注意的事。</p>
+        <h3>先分清自用还是商业化</h3>
+        <p>如果只是自己用量大，直接买官方订阅更省心，需要突破限制的操作留给自己账号做就好，没必要把自己的订阅拿出来分给一堆陌生人用。账号一旦出问题，追责和退款都会很麻烦。如果只是想和几个朋友拼车分摊成本，找现成的中转直接用即可，不必自己搭建。真正需要自己搭一套的，通常是想做规模化的商业站点。</p>
+        <h3>上游怎么选</h3>
+        <p>商业站点的上游无非两种：自己维护账号池，或者接现成的上游中转。自建账号池要面对账号被封的风险，需要提前做好并发控制和轮换策略；纯接上游则要承担上游不稳定、涨价甚至跑路的连带风险。很多站点是先接上游练手，摸清楚门道之后再逐步转向自建。</p>
+        <h3>服务器和防护要点</h3>
+        <ul>
+          <li>选服务器优先看单核性能和带宽，而不是核心数量，因为中转类程序的负载主要吃单核。</li>
+          <li>选大厂、按固定带宽计费的机型，避免流量超额限速的坑。</li>
+          <li>上线前一定先套上 CDN，不要暴露源站真实 IP，否则很容易成为同行或"练手"攻击者的目标。</li>
+          <li>登录、注册接口和裸调 API 接口是最常被攻击的两个点，建议分别针对未授权请求做限流和拦截规则。</li>
+        </ul>
+        <h3>获客和支付</h3>
+        <p>获客上，找到自己熟悉、目标用户集中的社区（比如面向开发者还是设计师）比广撒网更有效。支付渠道建议同时准备好国内扫码支付和跨境/加密货币支付，并且一定要留一个用户能找到人、能维权的沟通渠道，这也是前文"五条判断标准"里"运营稳定"对应的另一面：你自己作为运营方，同样要经得起这条标准的检验。</p>
+      </section>
+
+      <section id="picks">
+        <h2>精选中转站参考（Top 12）</h2>
+        <p>下面按数据整理的榜单里排名靠前的 12 家，完整 200 家名单和详细指标在 <a href="/stations/">中转站推荐榜</a>。</p>
+        <div class="pick-grid" id="picks-grid">
+          <!-- PICKS_START -->
+
+          <div class="pick-card">
+            <div class="rank">第 1 名</div>
+            <div class="name">DuiAPI</div>
+            <div class="meta">智谱、阿里云、DeepSeek</div>
+          </div>
+
+          <div class="pick-card">
+            <div class="rank">第 2 名</div>
+            <div class="name">CUN.ai</div>
+            <div class="meta">阿里云、Anthropic、DeepSeek</div>
+          </div>
+
+          <div class="pick-card">
+            <div class="rank">第 3 名</div>
+            <div class="name">DragonAPI</div>
+            <div class="meta">OpenAI、Anthropic、Google</div>
+          </div>
+
+          <div class="pick-card">
+            <div class="rank">第 4 名</div>
+            <div class="name">云渡</div>
+            <div class="meta">OpenAI、Anthropic</div>
+          </div>
+
+          <div class="pick-card">
+            <div class="rank">第 5 名</div>
+            <div class="name">EiRouter</div>
+            <div class="meta">Anthropic、OpenAI</div>
+          </div>
+
+          <div class="pick-card">
+            <div class="rank">第 6 名</div>
+            <div class="name">ccgo</div>
+            <div class="meta">Anthropic、Google、OpenAI</div>
+          </div>
+
+          <div class="pick-card">
+            <div class="rank">第 7 名</div>
+            <div class="name">Apizh</div>
+            <div class="meta">OpenAI、Anthropic</div>
+          </div>
+
+          <div class="pick-card">
+            <div class="rank">第 8 名</div>
+            <div class="name">hao.ai</div>
+            <div class="meta">Anthropic、OpenAI</div>
+          </div>
+
+          <div class="pick-card">
+            <div class="rank">第 9 名</div>
+            <div class="name">A6api</div>
+            <div class="meta">阿里云、Anthropic、DeepSeek</div>
+          </div>
+
+          <div class="pick-card">
+            <div class="rank">第 10 名</div>
+            <div class="name">MuskAI</div>
+            <div class="meta">Anthropic、OpenAI、Google</div>
+          </div>
+
+          <div class="pick-card">
+            <div class="rank">第 11 名</div>
+            <div class="name">ToolCode</div>
+            <div class="meta">OpenAI、Anthropic</div>
+          </div>
+
+          <div class="pick-card">
+            <div class="rank">第 12 名</div>
+            <div class="name">ModCon</div>
+            <div class="meta">Anthropic、OpenAI</div>
+          </div>
+          <!-- PICKS_END -->
+        </div>
+        <p><a class="btn btn-outline" href="/stations/">查看完整 200 家推荐榜 →</a></p>
+      </section>
+
+      <section id="faq">
+        <h2>常见问题</h2>
+        <h3>中转站和官网直连有什么区别？</h3>
+        <p>模型能力本身没有区别，前提是中转站给的是原版模型、没有偷偷降配。区别在于中转站帮你处理了海外支付、网络和账号风控这些麻烦事，价格通常也更低，但你需要自己判断平台是否靠谱，也失去了官方直接提供的售后保障。</p>
+        <h3>中转站会不会突然跑路？</h3>
+        <p>有可能，尤其是价格低到不正常的引流型站点。降低风险最实际的办法是不要一次充太多，先小额测试几天，确认计费和响应都正常，再决定要不要继续加值。</p>
+        <h3>中转站的价格为什么能比官网便宜？</h3>
+        <p>正规的低价通常来自批量采购、人民币结算省去的换汇和手续费成本，以及不同订阅渠道之间的价差。如果价格低到明显不合常理，大概率不是让利，而是用了前文提到的高风险渠道，或者模型被偷偷换成了便宜的小模型。</p>
+        <h3>第一次用中转站，怎么用比较稳妥？</h3>
+        <p>先按"五条判断标准"筛一遍，确认计费透明、能小额试用，再充值几美元或几十元人民币跑通一遍完整流程，确认输出质量和扣费都对得上，最后再考虑是否长期使用或大额充值。</p>
+      </section>
+    </article>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <span>&copy; 2026 AI中转站推荐 · 内容仅供参考，不构成任何担保或推荐</span>
+    <span><a href="/stations/">中转站推荐榜</a></span>
+  </div>
+</footer>
+</body>
+</html>
