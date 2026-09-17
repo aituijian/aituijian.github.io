@@ -2,19 +2,19 @@
 """生成 /stations/index.html 和 data/stations.json。
 
 数据来源: data/source-data.json（抓取自 apizhongzhuan.github.io/data.json，
-其数据整理自 hvoy.ai 的公开聚合信息）。
+其数据整理自 hvoyai.com 的公开聚合信息）。
 
 用法: python3 scripts/build_stations.py
 """
 import datetime
 import html
 import json
+import random
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "data" / "source-data.json"
-URL_CACHE = ROOT / "data" / "url-cache.json"
 OUT_JSON = ROOT / "data" / "stations.json"
 OUT_HTML = ROOT / "stations" / "index.html"
 SITE_URL = "https://aituijian.github.io"
@@ -40,6 +40,10 @@ def fmt_payment(methods):
     if not methods:
         return "暂未公开付款方式"
     return "、".join(methods)
+
+
+def to_hvoyai(url):
+    return url.replace("hvoy.ai", "hvoyai.com")
 
 
 def summary_for(site, idx):
@@ -86,31 +90,33 @@ def summary_for(site, idx):
 
 def build_dataset():
     raw = json.loads(SOURCE.read_text(encoding="utf-8"))
-    url_cache = {}
-    if URL_CACHE.exists():
-        url_cache = json.loads(URL_CACHE.read_text(encoding="utf-8"))
     candidates = sorted(raw["sites"], key=lambda s: s.get("rank", 999999))[:CANDIDATE_POOL]
-    out = []
+    selected = []
     skipped = []
     for site in candidates:
-        if len(out) >= TOP_N:
+        if len(selected) >= TOP_N:
             break
         if not site.get("modelCount") and not site.get("paymentMethods") and site.get("uptime") is None:
             skipped.append(f"{site['name']}(空数据)")
             continue
-        real_url = url_cache.get(site["url"])
-        if not real_url or "hvoy.ai" in real_url:
-            skipped.append(site["name"])
-            continue
-        idx = len(out)
+        selected.append(site)
+    if skipped:
+        print(f"跳过 {len(skipped)} 家数据不完整的站点（{'、'.join(skipped)}），已用排名更靠后的站点补足 {TOP_N} 家。")
+    if len(selected) < TOP_N:
+        print(f"警告：候选池不够，只生成了 {len(selected)} 家，考虑把 CANDIDATE_POOL 调大。")
+
+    random.shuffle(selected)
+
+    out = []
+    for idx, site in enumerate(selected):
+        visit_url = to_hvoyai(site["url"])
         out.append(
             {
-                "slug": slugify(site["name"], site.get("rank", idx + 1)),
+                "slug": slugify(site["name"], idx + 1),
                 "rank": idx + 1,
                 "sourceRank": site.get("rank"),
                 "name": site["name"],
-                "url": real_url,
-                "directoryUrl": site["url"],
+                "url": visit_url,
                 "modelCount": site.get("modelCount"),
                 "models": site.get("models") or [],
                 "uptime": site.get("uptime"),
@@ -124,10 +130,6 @@ def build_dataset():
                 "summary": summary_for(site, idx),
             }
         )
-    if skipped:
-        print(f"跳过 {len(skipped)} 家解析不到真实域名的站点（{'、'.join(skipped)}），已用排名更靠后的站点补足 {TOP_N} 家。")
-    if len(out) < TOP_N:
-        print(f"警告：候选池不够，只生成了 {len(out)} 家，考虑把 CANDIDATE_POOL 或 resolve_urls.py --limit 调大。")
     return raw, out
 
 
@@ -152,7 +154,7 @@ def card_html(s):
     return f"""
       <article class="station-card" id="{e(s['slug'])}" data-search="{e(s['name'].lower())} {e(' '.join(s['models']).lower())}">
         <div class="head">
-          <h3>{e(s['name'])}</h3>
+          <h3><a href="{e(s['url'])}" target="_blank" rel="nofollow noopener noreferrer">{e(s['name'])}</a></h3>
           <span class="rank-badge">第 {s['rank']} 名</span>
         </div>
         <p class="summary">{e(s['summary'])}</p>
@@ -242,7 +244,7 @@ var _hmt = _hmt || [];
     <p style="color:var(--text-muted);max-width:720px;">按模型覆盖、在线率、延迟和用户评分整理的中转站列表，数据每次更新时间见下方说明。点进任何一家之前，建议先看首页的<a href="/#checklist">《怎么判断一个中转站靠不靠谱》</a>，再小额测试。</p>
 
     <div class="disclaimer">
-      数据整理自公开聚合信息（来源：hvoy.ai，经 apizhongzhuan.github.io 中转抓取，快照更新于 {source_updated}），仅供横向对比参考，不构成推荐或担保。请在正式使用前自行核实价格、模型真实性与售后条款，建议先小额充值测试再决定是否长期使用。
+      数据整理自公开聚合信息（来源：hvoyai.com，经 apizhongzhuan.github.io 中转抓取，快照更新于 {source_updated}），仅供横向对比参考，不构成推荐或担保。请在正式使用前自行核实价格、模型真实性与售后条款，建议先小额充值测试再决定是否长期使用。
     </div>
 
     <div class="stations-toolbar">
@@ -293,7 +295,7 @@ def pick_card_html(s):
     return f"""
           <div class="pick-card">
             <div class="rank">第 {s['rank']} 名</div>
-            <div class="name">{e(s['name'])}</div>
+            <div class="name"><a href="{e(s['url'])}" target="_blank" rel="nofollow noopener noreferrer">{e(s['name'])}</a></div>
             <div class="meta">{e(fmt_models(s['models']))}</div>
           </div>"""
 

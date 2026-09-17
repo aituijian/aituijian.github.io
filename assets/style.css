@@ -394,6 +394,17 @@ th {
   font-size: 17px;
 }
 
+.station-card h3 a,
+.pick-card .name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.station-card h3 a:hover,
+.pick-card .name a:hover {
+  text-decoration: underline;
+}
+
 .station-card .summary {
   font-size: 14px;
   color: var(--text-muted);
